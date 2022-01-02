@@ -1,0 +1,31 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+}
+
+//group 'org.example'
+group 'com.haneul.study'
+version '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+
+// repositories: 각종 의존성(라이브러리)들을 어떤 원격 저장소에서 받을지 결정
+repositories {
+    mavenCentral() // 기본적으로 많이 사용 (라이브러리 업로드 위해 많은 과정과 설정 필요)
+    // jcenter() // 라이브러리 업로드 간단 (jcenter에 업로드하면 mavenCentral에도 업로드될 수 있도록 자동화 가능) ... 서비스 종료되었다네 ..
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// dependencies: 프로젝트 개발에 필요한 의존성들을 선언하는 곳
+dependencies {
+    // 기존
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    // 추가
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
