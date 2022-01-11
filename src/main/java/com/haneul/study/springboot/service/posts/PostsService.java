@@ -2,12 +2,16 @@ package com.haneul.study.springboot.service.posts;
 
 import com.haneul.study.springboot.domain.posts.Posts;
 import com.haneul.study.springboot.domain.posts.PostsRepository;
+import com.haneul.study.springboot.web.dto.PostsListResponseDto;
 import com.haneul.study.springboot.web.dto.PostsResponseDto;
 import com.haneul.study.springboot.web.dto.PostsSaveRequestDto;
 import com.haneul.study.springboot.web.dto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor  // final이 선언된 모든 필드를 인자값으로 하는 생성자 자동 생성
 @Service
@@ -40,5 +44,26 @@ public class PostsService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id="+ id));
 
         return new PostsResponseDto(posts);
+    }
+
+    // readOnly = true: 트랜잭션 범위는 유지하되, 조회 기능만 남겨두어 조회 속도가 개선된다.
+    // - 등록, 수정, 삭제 기능이 전형 ㅓㅄ는 서비스 메소드에서 사용 추천
+    @Transactional(readOnly = true)
+    public List<PostsListResponseDto> findAllDesc() {
+        return postsRepository.findAllDesc().stream()
+                // .map(posts -> new PostsListResponseDto(posts))와 같은 의미
+                // : postsRepository 결과로 넘어온 Posts stream을 map을 통해 PostsListResponseDto 변환 -> List로 변환하는 메소드
+                .map(PostsListResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Posts posts = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id="+id));
+
+        // 엔티티를 파라미터로 받아 삭제할 수도 있고, deleteById 메소드를 이용하면 id로 삭제할 수도 있다.
+        // 존재하는 Posts인지 확인을 위해 findById()로 조회 후 삭제
+        postsRepository.delete(posts);
     }
 }
