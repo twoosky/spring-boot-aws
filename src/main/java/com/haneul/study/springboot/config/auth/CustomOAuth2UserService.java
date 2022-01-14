@@ -1,5 +1,7 @@
 package com.haneul.study.springboot.config.auth;
 
+import com.haneul.study.springboot.config.auth.dto.OAuthAttributes;
+import com.haneul.study.springboot.config.auth.dto.SessionUser;
 import com.haneul.study.springboot.domain.user.User;
 import com.haneul.study.springboot.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +49,12 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // SessionUser
         // : 세션에 사용자 정보를 저장하기 위한 Dto 클래스
-        // User 클래스를 쓰지 않고 SessionUser Dto 클래스를 새로 만들어 사용
+        // User 클래스를 쓰지 않고 SessionUser Dto 클래스를 새로 만들어 사용하는 이유
+        // - Entity 클래스는 @OneToMany, @ManyToMany 등 자식 엔티티를 갖고 있다면 직렬화 대상에 자식들가지 포함되므로 성능 이슈, 부수 효과가 발생할 확률이 높다.
+        // - 직렬화: 객체 데이터를 바이트 형태로 변환하는 기술
+        // - 직렬화 조건: java.io.Serializable 인터페이스를 상속받는 객체
+        // - 따라서, 직렬화 기능을 가진 세션 Dto를 하나 추가로 만드는 것이 좋다.
+        // https://blog.naver.com/jd06280/222612538382
         httpSession.setAttribute("user", new SessionUser(user));
 
         // DefaultOAuth2User의 권한을 가진 User를 load
@@ -57,7 +64,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         return new DefaultOAuth2User(
                 // singleton: Set 싱글톤 컬렉션 생성
                 Collections.singleton(new SimpleGrantedAuthority(user.getRoleKey())),
-                attributes.getAttibutes(),
+                attributes.getAttributes(),
                 attributes.getNameAttributeKey());
 
     }
