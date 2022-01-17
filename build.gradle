@@ -46,7 +46,9 @@ dependencies {
     // 소셜 로그인 등 클라이언트 입장에서 소셜 기능 구현 시 필요한 의존성
     // spring-security-oauth2-client와 spring-security-oauth2-jose를 기본적으로 관리해줌
     implementation('org.springframework.boot:spring-boot-starter-oauth2-client')
+    testImplementation("org.springframework.security:spring-security-test")    // 시큐리티 테스트 관련 의존성
 
     // 세션(로그인 사용자 정보) 저장소를 jdbc 데이터베이스로 설정
     implementation('org.springframework.session:spring-session-jdbc')
+
 }
